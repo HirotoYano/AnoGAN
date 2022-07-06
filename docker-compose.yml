@@ -1,0 +1,17 @@
+version: "3"
+services:
+  app:
+    container_name: "tensorflow_anogan"
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: tensorflow_anogan
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - "driver": "nvidia"
+              "capabilities": ["gpu"]
+    volumes: 
+        - /home/mitune/Workspace/anogan_docker/share:/home/DeepLearning
+    tty: true

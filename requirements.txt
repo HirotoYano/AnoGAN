@@ -1,0 +1,7 @@
+numpy
+pandas
+matplotlib
+scikit-learn
+imageio
+git+https://github.com/tensorflow/docs
+ipython
