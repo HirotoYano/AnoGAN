@@ -5,3 +5,5 @@ scikit-learn
 imageio
 git+https://github.com/tensorflow/docs
 ipython
+opencv-python
+opencv-contrib-python
