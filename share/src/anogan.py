@@ -1,13 +1,11 @@
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import (
-        Input, Reshape, Dense, MaxPooling2D, Flatten,
-        Conv2DTranspose, LeakyReLU,
-        Activation,
-        BatchNormalization
+        Input, Reshape, Dense, MaxPooling2D, Conv2D, Flatten, Conv2DTranspose,
+        LeakyReLU, Activation, BatchNormalization
 )
 from tensorflow.keras.optimizers import RMSprop
 from tensorflow.keras import backend as K
-from keras.utils. generic_utils import Progbar
+from tensorflow.keras.utils import Progbar
 
 # import tensorflow as tf
 import numpy as np

@@ -61,6 +61,8 @@ img = cv2.resize(img, None, fx=4, fy=4, interpolation=cv2.INTER_NEAREST)
 def anomaly_detection(test_img, g=None, d=None):
     model = anogan.anomaly_detector(g=g, d=d)
     ano_score, similar_img = anogan.compute_anomaly_score(model, test_img.reshape(1, 28, 28, 1), iterations=500, d=d)
+            test_img.reshape(1, 28, 28, 1), iterations=500, d=d)
+                                                          iterations=500, d=d)
 
     # anomaly area, 255 normalization
     np_residual = test_img.reshape(28, 28, 1) - similar_img.reshape(28, 28, 1)
