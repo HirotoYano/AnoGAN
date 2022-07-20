@@ -28,7 +28,6 @@ X_test_original = X_test.copy()
 
 X_train = X_train[y_train == 1]
 X_test = X_test[y_test == 1]
-print(f'train shape: {X_train.shape}')
 
 # 1. train generator & discriminator
 if args.mode == 'train':
@@ -61,8 +60,6 @@ img = cv2.resize(img, None, fx=4, fy=4, interpolation=cv2.INTER_NEAREST)
 def anomaly_detection(test_img, g=None, d=None):
     model = anogan.anomaly_detector(g=g, d=d)
     ano_score, similar_img = anogan.compute_anomaly_score(model, test_img.reshape(1, 28, 28, 1), iterations=500, d=d)
-            test_img.reshape(1, 28, 28, 1), iterations=500, d=d)
-                                                          iterations=500, d=d)
 
     # anomaly area, 255 normalization
     np_residual = test_img.reshape(28, 28, 1) - similar_img.reshape(28, 28, 1)
@@ -105,7 +102,7 @@ plt.title('query image')
 plt.imshow(qurey.reshape(28, 28), cmap=plt.cm.gray)
 plt.savefig('../output/query_image.png')
 
-print("anomaly score : ", score)
+print(f"anomaly score : {score}")
 plt.figure(2, figsize=(3, 3))
 plt.title('generated similar image')
 plt.imshow(pred.reshape(28, 28), cmap=plt.cm.gray)
