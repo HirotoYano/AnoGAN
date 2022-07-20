@@ -12,6 +12,13 @@ import numpy as np
 # import cv2
 import math
 import matplotlib.pyplot as plt
+import datetime
+
+now = datetime.datetime.now()
+current_time = now.strftime("%Y-%m-%d-%H-%M")
+
+input_weights_dir = "../input/weights"
+output_dir = "../output/" + current_time
 
 
 # combine images for visualization
@@ -83,8 +90,8 @@ def load_model():
     g_optim = RMSprop(lr=0.0002)
     g.compile(loss='binary_crossentropy', optimizer=g_optim)
     d.compile(loss='binary_crossentropy', optimizer=d_optim)
-    d.load_weights('../input/weights/discriminator.h5')
-    g.load_weights('../input/weights/generator.h5')
+    d.load_weights(f'{input_weights_dir}/discriminator.h5')
+    g.load_weights(f'{input_weights_dir}/generator.h5')
     return g, d
 
 
@@ -120,7 +127,7 @@ def train(BATCH_SIZE, X_train):
                 image = image * 127.5 + 127.5
                 plt.imshow(image)
                 # cv2.imwrite(f'./output/{str(epoch)}_{str(index)}.png', image)
-                plt.savefig(f'../output/{str(epoch)}_{str(index)}.png')
+                plt.savefig(f'{output_dir}/{str(epoch)}_{str(index)}.png')
 
             # attach label for training discriminator
             X = np.concatenate((image_batch, generated_images))
@@ -138,15 +145,15 @@ def train(BATCH_SIZE, X_train):
         print('')
 
         # save weights for each epoch
-        g.save_weights('../input/weights/generator.h5', True)
-        d.save_weights('../input/weights/discriminator.h5', True)
+        g.save_weights(f'{input_weights_dir}/generator.h5', True)
+        d.save_weights(f'{input_weights_dir}/discriminator.h5', True)
     return d, g
 
 
 # generate images
 def generate(BATCH_SIZE):
     g = generator_model()
-    g.load_weights('../input/weights/generator.h5')
+    g.load_weights(f'{input_weights_dir}/generator.h5')
     noise = np.random.uniform(0, 1, (BATCH_SIZE, 10))
     generated_images = g.predict(noise)
     return generated_images
@@ -161,7 +168,7 @@ def sum_of_residual(y_true, y_pred):
 def feature_extractor(d=None):
     if d is None:
         d = discriminator_model()
-        d.load_weights('../input/weights/discriminator.h5')
+        d.load_weights(f'{input_weights_dir}/discriminator.h5')
     intermidiate_model = Model(inputs=d.layers[0].input, outputs=d.layers[-7].output)
     print(f"d.layers[0].input = {d.layers[0].input}")
     print(f"d.layers[-7].output = {d.layers[-7].output}")
@@ -173,7 +180,7 @@ def feature_extractor(d=None):
 def anomaly_detector(g=None, d=None):
     if g is None:
         g = generator_model()
-        g.load_weights('../input/weights/generator.h5')
+        g.load_weights(f'{input_weights_dir}/generator.h5')
     intermidiate_model = feature_extractor(d)
     intermidiate_model.trainable = False
     g = Model(inputs=g.layers[1].input, outputs=g.layers[-1].output)

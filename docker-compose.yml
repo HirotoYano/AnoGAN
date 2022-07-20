@@ -1,11 +1,11 @@
 version: "3"
 services:
   app:
-    container_name: "tensorflow_anogan"
+    container_name: "tensorflow_anomary_detection"
     build:
       context: .
       dockerfile: ./Dockerfile
-    image: tensorflow_anogan
+    image: tensorflow_anomary_detection
     deploy:
       resources:
         reservations:
@@ -13,5 +13,5 @@ services:
             - "driver": "nvidia"
               "capabilities": ["gpu"]
     volumes: 
-        - /home/mitune/Workspace/anogan_docker/share:/home/DeepLearning
+        - ~/Workspace/anomaly_detection/share:/home/DeepLearning
     tty: true

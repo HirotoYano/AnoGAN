@@ -7,8 +7,13 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.datasets import mnist
 import argparse
 import anogan
+import datetime
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+now = datetime.datetime.now()
+current_time = now.strftime("%Y-%m-%d-%H-%M")
+dir_for_output = "../output/" + current_time
+os.makedirs(dir_for_output, exist_ok=True)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--img_idx', type=int, default=14)
@@ -100,19 +105,19 @@ print('%d label, %d : done' % (label_idx, img_idx), '%.2f' % score, '%.2fms' % t
 plt.figure(1, figsize=(3, 3))
 plt.title('query image')
 plt.imshow(qurey.reshape(28, 28), cmap=plt.cm.gray)
-plt.savefig('../output/query_image.png')
+plt.savefig(f'{dir_for_output}/query_image.png')
 
 print(f"anomaly score : {score}")
 plt.figure(2, figsize=(3, 3))
 plt.title('generated similar image')
 plt.imshow(pred.reshape(28, 28), cmap=plt.cm.gray)
-plt.savefig('../output/generated_similar_image.png')
+plt.savefig(f'{dir_for_output}/generated_similar_image.png')
 
 plt.figure(3, figsize=(3, 3))
 plt.title('anomaly detection')
 plt.imshow(cv2.cvtColor(diff, cv2.COLOR_BGR2RGB))
 plt.show()
-plt.savefig('../output/anomaly_detection.png')
+plt.savefig(f'{dir_for_output}/anomaly_detection.png')
 
 
 # 4. tsne feature view
@@ -124,7 +129,7 @@ print("random noise image")
 plt.figure(4, figsize=(2, 2))
 plt.title('random noise image')
 plt.imshow(random_image[0].reshape(28, 28), cmap=plt.cm.gray)
-plt.savefig('../output/random_noise_image.png')
+plt.savefig(f'{dir_for_output}/random_noise_image.png')
 
 # intermidieate output of discriminator
 model = anogan.feature_extractor()
@@ -145,4 +150,4 @@ plt.scatter(X_embedded[100:400, 0], X_embedded[100:400, 1], label='mnist(anomaly
 plt.scatter(X_embedded[400:, 0], X_embedded[400:, 1], label='mnist(normal)')
 plt.legend()
 plt.show()
-plt.savefig('../output/t-SNE.png')
+plt.savefig(f'{dir_for_output}/t-SNE.png')
