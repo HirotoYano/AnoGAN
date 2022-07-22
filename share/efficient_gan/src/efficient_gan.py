@@ -12,7 +12,7 @@ class EfficientGAN():
         self.latent_dim = int(latent_dim)
 
     # Train model
-    def fit(self, X_train, epochs=50, batch_size=50, loss=tf.keras.losses.BinaryCrossentropy(),
+    def fit(self, X_train, epochs=3, batch_size=50, loss=tf.keras.losses.BinaryCrossentropy(),
             optimizer=tf.keras.optimizers.Adam(lr=1e-5, beta_1=0.5), test=tuple(), early_stop_num=50,
             verbose=1):
 
@@ -25,6 +25,7 @@ class EfficientGAN():
 
         # Define model for Discriminator
         self.dis = self.get_discriminator()
+        self.dis.summary()
         self.dis.compile(loss=loss, optimizer=optimizer)
 
         # Define model to train Encoder
@@ -86,27 +87,35 @@ class EfficientGAN():
                 # Predict testing-data
                 proba = self.predict(X_test)
                 proba = minmax_scale(proba)
+                ###################################
+
+                # print("y_true :" + y_true)
+                # print("proba:" + proba)
+                ##################
 
                 # As "val_loss", calculate binary cross entropy
-                val_loss = tf.keras.losses.binary_crossentropy(y_true, proba).numpy()
+                bce = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+                # val_loss = tf.keras.losses.binary_crossentropy(y_true, proba).numpy()
+                val_loss =  bce(y_true, proba).numpy()
+                # val_loss = tf.keras.losses.BinaryCrossentropy(y_true, proba)
 
                 # If "val_loss" is less than "min_val_loss"
                 if min_val_loss > val_loss:
                     min_val_loss = val_loss  # Update "min_val_loss" to "val_loss"
                     stop_count = 0  # Change "stop_count" to 0
                 # If "stop_count" is equal or more than "early_stop_num", training is end
-            elif stop_count >= early_stop_num:
-                break
-            # Else, "stop_count" is added 1
-        else:
-            stop_count += 1
+                elif stop_count >= early_stop_num:
+                    break
+                # Else, "stop_count" is added 1
+                else:
+                    stop_count += 1
 
-        # Display learning progress
-        if verbose == 1 and i % 100 == 0:
-            if len(test) == 0:
-                print(f'epoch{i} -> d_loss:{d_loss} e_loss:{e_loss} g_loss:{g_loss}')
-            else:
-                print(f'epoch{i} -> d_loss:{d_loss} e_loss:{e_loss} g_loss:{g_loss} val_loss:{val_loss}')
+            # Display learning progress
+            if verbose == 1 and i % 5 == 0:
+                if len(test) == 0:
+                    print(f'epoch{i} -> d_loss:{d_loss} e_loss:{e_loss} g_loss:{g_loss}')
+                else:
+                    print(f'epoch{i} -> d_loss:{d_loss} e_loss:{e_loss} g_loss:{g_loss} val_loss:{val_loss}')
 
     # Test model
     def predict(self, X_test, weight=0.9, degree=1):
