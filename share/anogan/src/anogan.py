@@ -125,7 +125,7 @@ def train(BATCH_SIZE, X_train):
             if index % 20 == 0:
                 image = combine_images(generated_images)
                 image = image * 127.5 + 127.5
-                plt.imshow(image[:, :, :])
+                plt.imshow(image)
                 # cv2.imwrite(f'./output/{str(epoch)}_{str(index)}.png', image)
                 plt.savefig(f'{output_dir}/{str(epoch)}_{str(index)}.png')
 
@@ -170,6 +170,8 @@ def feature_extractor(d=None):
         d = discriminator_model()
         d.load_weights(f'{input_weights_dir}/discriminator.h5')
     intermidiate_model = Model(inputs=d.layers[0].input, outputs=d.layers[-7].output)
+    print(f"d.layers[0].input = {d.layers[0].input}")
+    print(f"d.layers[-7].output = {d.layers[-7].output}")
     intermidiate_model.compile(loss='binary_crossentropy', optimizer='rmsprop')
     return intermidiate_model
 
@@ -182,6 +184,8 @@ def anomaly_detector(g=None, d=None):
     intermidiate_model = feature_extractor(d)
     intermidiate_model.trainable = False
     g = Model(inputs=g.layers[1].input, outputs=g.layers[-1].output)
+    print(f"g.layers[1].input = {g.layers[1].input}")
+    print(f"g.layers[-1].output = {g.layers[-1].output}")
     g.trainable = False
     # Input layer cann't be trained. Add new layer as same size & same distribution
     aInput = Input(shape=(10,))

@@ -13,5 +13,5 @@ services:
             - "driver": "nvidia"
               "capabilities": ["gpu"]
     volumes: 
-        - ~/Workspace/anogan_docker/share:/home/DeepLearning
+        - ~/Workspace/anomaly_detection/share:/home/DeepLearning
     tty: true
