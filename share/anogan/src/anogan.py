@@ -107,10 +107,17 @@ def train(BATCH_SIZE, X_train):
     d_on_g.compile(loss='mse', optimizer=g_optim)
     d.trainable = True
     d.compile(loss='mse', optimizer=d_optim)
+    d_loss_list = []
+    g_loss_list = []
+    n_iter = int(X_train.shape[0]/BATCH_SIZE)
+    print(f"n_iter : {n_iter}")
+    # train_sizes = np.arange(1, n_iter*10+1)
+    iter_size = 3
+    last_num = int(104 / iter_size + 1) * 10
+    train_sizes = np.arange(1, last_num+1)
 
     for epoch in range(10):
         print(f"Epoch is {epoch}")
-        n_iter = int(X_train.shape[0]/BATCH_SIZE)
         progress_bar = Progbar(target=n_iter)
 
         for index in range(n_iter):
@@ -120,6 +127,7 @@ def train(BATCH_SIZE, X_train):
             # load real data & generate fake data
             image_batch = X_train[index*BATCH_SIZE:(index+1)*BATCH_SIZE]
             generated_images = g.predict(noise, verbose=0)
+            # print(f"generated_images : {generated_images.shape}")
 
             # visualize training results
             if index % 20 == 0:
@@ -135,10 +143,14 @@ def train(BATCH_SIZE, X_train):
 
             # training discriminator
             d_loss = d.train_on_batch(X, y)
+            if index % iter_size == 0:
+                d_loss_list.append(d_loss)
 
             # training generator
             d.trainable = False
             g_loss = d_on_g.train_on_batch(noise, np.array([1] * BATCH_SIZE))
+            if index % iter_size == 0:
+                g_loss_list.append(g_loss)
             d.trainable = True
 
             progress_bar.update(index, values=[('g', g_loss), ('d', d_loss)])
@@ -147,6 +159,27 @@ def train(BATCH_SIZE, X_train):
         # save weights for each epoch
         g.save_weights(f'{input_weights_dir}/generator.h5', True)
         d.save_weights(f'{input_weights_dir}/discriminator.h5', True)
+
+    d_loss_array = np.array(d_loss_list)
+    g_loss_array = np.array(g_loss_list)
+    # print(f"d_loss_array : {d_loss_array.shape}")
+    # print(f"g_loss_array : {g_loss_array.shape}")
+    # print(f"train_sizes : {train_sizes.shape}")
+
+    plt.figure()
+    plt.title("Learning Curve")
+    plt.xlabel("Training Step")
+    plt.ylabel("Loss")
+
+    # plt.plot(train_sizes, d_loss_array, 'o-', color="r", label="d_loss")
+    # plt.plot(train_sizes, g_loss_array, 'o-', color="g", label="g_loss")
+    plt.plot(train_sizes, d_loss_array, color="r", label="d_loss")
+    plt.plot(train_sizes, g_loss_array, color="g", label="g_loss")
+
+    plt.legend(loc="best")
+
+    plt.savefig(f'{output_dir}/learning_curve.png')
+
     return d, g
 
 
